@@ -140,21 +140,6 @@ var lyr_saintloagglo_tourisme_sla_randonnees_7 = new ol.layer.Vector({
                 interactive: true,
                 title: '<img src="styles/legend/saintloagglo_tourisme_sla_randonnees_7.png" /> saintloagglo_tourisme_sla_randonnees'
             });
-var format_bt_prive_8 = new ol.format.GeoJSON();
-var features_bt_prive_8 = format_bt_prive_8.readFeatures(json_bt_prive_8, 
-            {dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
-var jsonSource_bt_prive_8 = new ol.source.Vector({
-    attributions: ' ',
-});
-jsonSource_bt_prive_8.addFeatures(features_bt_prive_8);
-var lyr_bt_prive_8 = new ol.layer.Vector({
-                declutter: false,
-                source:jsonSource_bt_prive_8, 
-                style: style_bt_prive_8,
-                popuplayertitle: 'bt_prive',
-                interactive: true,
-                title: '<img src="styles/legend/bt_prive_8.png" /> bt_prive'
-            });
 var format_bt_pub_9 = new ol.format.GeoJSON();
 var features_bt_pub_9 = format_bt_pub_9.readFeatures(json_bt_pub_9, 
             {dataProjection: 'EPSG:4326', featureProjection: 'EPSG:3857'});
@@ -220,12 +205,11 @@ var group_Ombrage = new ol.layer.Group({
                                 fold: 'open',
                                 title: 'Ombrage'});
 
-lyr_bd_alti_stlo_agglo_0.setVisible(true);lyr_ombrage45_1.setVisible(true);lyr_ombrage135_2.setVisible(true);lyr_ombrage225_3.setVisible(true);lyr_ombrage_4.setVisible(true);lyr_courbes5m_5.setVisible(true);lyr_courbes25m_6.setVisible(true);lyr_saintloagglo_tourisme_sla_randonnees_7.setVisible(true);lyr_bt_prive_8.setVisible(true);lyr_bt_pub_9.setVisible(true);lyr_bt_rel_10.setVisible(true);lyr_bt_leger_11.setVisible(true);lyr_SaintLoAgglo_LimiteAdministrative_12.setVisible(true);
-var layersList = [lyr_bd_alti_stlo_agglo_0,group_Ombrage,lyr_courbes5m_5,lyr_courbes25m_6,lyr_saintloagglo_tourisme_sla_randonnees_7,lyr_bt_prive_8,lyr_bt_pub_9,lyr_bt_rel_10,lyr_bt_leger_11,lyr_SaintLoAgglo_LimiteAdministrative_12];
+lyr_bd_alti_stlo_agglo_0.setVisible(true);lyr_ombrage45_1.setVisible(true);lyr_ombrage135_2.setVisible(true);lyr_ombrage225_3.setVisible(true);lyr_ombrage_4.setVisible(true);lyr_courbes5m_5.setVisible(true);lyr_courbes25m_6.setVisible(true);lyr_saintloagglo_tourisme_sla_randonnees_7.setVisible(true));lyr_bt_pub_9.setVisible(true);lyr_bt_rel_10.setVisible(true);lyr_bt_leger_11.setVisible(true);lyr_SaintLoAgglo_LimiteAdministrative_12.setVisible(true);
+var layersList = [lyr_bd_alti_stlo_agglo_0,group_Ombrage,lyr_courbes5m_5,lyr_courbes25m_6,lyr_saintloagglo_tourisme_sla_randonnees_7,lyr_bt_pub_9,lyr_bt_rel_10,lyr_bt_leger_11,lyr_SaintLoAgglo_LimiteAdministrative_12];
 lyr_courbes5m_5.set('fieldAliases', {'fid': 'fid', 'ID': 'ID', 'ELEV': 'ELEV', });
 lyr_courbes25m_6.set('fieldAliases', {'fid': 'fid', 'ID': 'ID', 'ELEV': 'ELEV', });
 lyr_saintloagglo_tourisme_sla_randonnees_7.set('fieldAliases', {'nom': 'nom', 'type': 'type', 'distance': 'distance', 'temps': 'temps', 'difficulte': 'difficulte', 'categorie': 'categorie', 'depart': 'depart', 'denivele': 'denivele', 'gestionnai': 'gestionnai', 'lien': 'lien', });
-lyr_bt_prive_8.set('fieldAliases', {'gc_key': 'gc_key', 'angle': 'angle', 'nom': 'nom', 'planche': 'planche', 'lot_meta': 'lot_meta', });
 lyr_bt_pub_9.set('fieldAliases', {'gc_key': 'gc_key', 'angle': 'angle', 'nom': 'nom', 'planche': 'planche', 'lot_meta': 'lot_meta', 'affectat': 'affectat', });
 lyr_bt_rel_10.set('fieldAliases', {'gc_key': 'gc_key', 'angle': 'angle', 'nom': 'nom', 'planche': 'planche', 'lot_meta': 'lot_meta', });
 lyr_bt_leger_11.set('fieldAliases', {'gc_key': 'gc_key', 'angle': 'angle', 'nom': 'nom', 'planche': 'planche', 'lot_meta': 'lot_meta', });
@@ -233,7 +217,6 @@ lyr_SaintLoAgglo_LimiteAdministrative_12.set('fieldAliases', {'gid': 'gid', 'id'
 lyr_courbes5m_5.set('fieldImages', {'fid': '', 'ID': '', 'ELEV': '', });
 lyr_courbes25m_6.set('fieldImages', {'fid': 'TextEdit', 'ID': 'Range', 'ELEV': 'TextEdit', });
 lyr_saintloagglo_tourisme_sla_randonnees_7.set('fieldImages', {'nom': 'TextEdit', 'type': 'TextEdit', 'distance': 'TextEdit', 'temps': 'Range', 'difficulte': 'TextEdit', 'categorie': 'TextEdit', 'depart': 'TextEdit', 'denivele': 'Range', 'gestionnai': 'TextEdit', 'lien': 'TextEdit', });
-lyr_bt_prive_8.set('fieldImages', {'gc_key': '', 'angle': '', 'nom': '', 'planche': '', 'lot_meta': '', });
 lyr_bt_pub_9.set('fieldImages', {'gc_key': '', 'angle': '', 'nom': '', 'planche': '', 'lot_meta': '', 'affectat': '', });
 lyr_bt_rel_10.set('fieldImages', {'gc_key': '', 'angle': '', 'nom': '', 'planche': '', 'lot_meta': '', });
 lyr_bt_leger_11.set('fieldImages', {'gc_key': 'TextEdit', 'angle': 'TextEdit', 'nom': 'TextEdit', 'planche': 'TextEdit', 'lot_meta': 'Range', });
@@ -241,7 +224,6 @@ lyr_SaintLoAgglo_LimiteAdministrative_12.set('fieldImages', {'gid': 'TextEdit', 
 lyr_courbes5m_5.set('fieldLabels', {'fid': 'no label', 'ID': 'no label', 'ELEV': 'no label', });
 lyr_courbes25m_6.set('fieldLabels', {'fid': 'no label', 'ID': 'no label', 'ELEV': 'no label', });
 lyr_saintloagglo_tourisme_sla_randonnees_7.set('fieldLabels', {'nom': 'no label', 'type': 'no label', 'distance': 'no label', 'temps': 'no label', 'difficulte': 'no label', 'categorie': 'no label', 'depart': 'no label', 'denivele': 'no label', 'gestionnai': 'no label', 'lien': 'no label', });
-lyr_bt_prive_8.set('fieldLabels', {'gc_key': 'no label', 'angle': 'no label', 'nom': 'no label', 'planche': 'no label', 'lot_meta': 'no label', });
 lyr_bt_pub_9.set('fieldLabels', {'gc_key': 'no label', 'angle': 'no label', 'nom': 'no label', 'planche': 'no label', 'lot_meta': 'no label', 'affectat': 'no label', });
 lyr_bt_rel_10.set('fieldLabels', {'gc_key': 'no label', 'angle': 'no label', 'nom': 'no label', 'planche': 'no label', 'lot_meta': 'no label', });
 lyr_bt_leger_11.set('fieldLabels', {'gc_key': 'no label', 'angle': 'no label', 'nom': 'no label', 'planche': 'no label', 'lot_meta': 'no label', });
