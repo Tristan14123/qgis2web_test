@@ -1,0 +1,29 @@
+{
+  "name": "saint-lo-agglomeration-carte-interactive",
+  "version": "1.0.0",
+  "description": "Carte interactive web de Saint-Lô Agglomération générée avec QGIS2Web",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx serve . -p 8000",
+    "deploy": "echo 'Déployez ce dossier sur GitHub Pages, Netlify ou tout autre serveur web statique'"
+  },
+  "keywords": [
+    "cartographie",
+    "qgis",
+    "openlayers",
+    "saint-lo",
+    "web-mapping",
+    "gis"
+  ],
+  "author": "Saint-Lô Agglomération",
+  "license": "SEE LICENSE IN README.md",
+  "devDependencies": {
+    "serve": "^14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VOTRE-NOM/saint-lo-agglomeration-carte.git"
+  },
+  "homepage": "https://VOTRE-NOM.github.io/saint-lo-agglomeration-carte"
+}
