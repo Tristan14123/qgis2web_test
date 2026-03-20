@@ -105,7 +105,7 @@ maxResolution:42.00669922839295,
  
                 style: style_courbes5m_5,
                 popuplayertitle: 'courbes - 5 m',
-                interactive: true,
+                interactive: false,
                 title: '<img src="styles/legend/courbes5m_5.png" /> courbes - 5 m'
             });
 var format_courbes25m_6 = new ol.format.GeoJSON();
@@ -122,7 +122,7 @@ maxResolution:15.402456383744077,
  
                 style: style_courbes25m_6,
                 popuplayertitle: 'courbes - 25 m',
-                interactive: true,
+                interactive: false,
                 title: '<img src="styles/legend/courbes25m_6.png" /> courbes - 25 m'
             });
 var format_saintloagglo_tourisme_sla_randonnees_7 = new ol.format.GeoJSON();
@@ -152,7 +152,7 @@ var lyr_bt_pub_9 = new ol.layer.Vector({
                 source:jsonSource_bt_pub_9, 
                 style: style_bt_pub_9,
                 popuplayertitle: 'bt_pub',
-                interactive: true,
+                interactive: false,
                 title: '<img src="styles/legend/bt_pub_9.png" /> bt_pub'
             });
 var format_bt_rel_10 = new ol.format.GeoJSON();
@@ -167,7 +167,7 @@ var lyr_bt_rel_10 = new ol.layer.Vector({
                 source:jsonSource_bt_rel_10, 
                 style: style_bt_rel_10,
                 popuplayertitle: 'bt_rel',
-                interactive: true,
+                interactive: false,
                 title: '<img src="styles/legend/bt_rel_10.png" /> bt_rel'
             });
 var format_bt_leger_11 = new ol.format.GeoJSON();
@@ -182,7 +182,7 @@ var lyr_bt_leger_11 = new ol.layer.Vector({
                 source:jsonSource_bt_leger_11, 
                 style: style_bt_leger_11,
                 popuplayertitle: 'bt_leger',
-                interactive: true,
+                interactive: false,
                 title: '<img src="styles/legend/bt_leger_11.png" /> bt_leger'
             });
 var format_SaintLoAgglo_LimiteAdministrative_12 = new ol.format.GeoJSON();
@@ -197,7 +197,7 @@ var lyr_SaintLoAgglo_LimiteAdministrative_12 = new ol.layer.Vector({
                 source:jsonSource_SaintLoAgglo_LimiteAdministrative_12, 
                 style: style_SaintLoAgglo_LimiteAdministrative_12,
                 popuplayertitle: 'SaintLoAgglo_LimiteAdministrative',
-                interactive: true,
+                interactive: false,
                 title: '<img src="styles/legend/SaintLoAgglo_LimiteAdministrative_12.png" /> SaintLoAgglo_LimiteAdministrative'
             });
 var group_Ombrage = new ol.layer.Group({
@@ -205,11 +205,118 @@ var group_Ombrage = new ol.layer.Group({
                                 fold: 'open',
                                 title: 'Ombrage'});
 
-lyr_bd_alti_stlo_agglo_0.setVisible(true);lyr_ombrage45_1.setVisible(true);lyr_ombrage135_2.setVisible(true);lyr_ombrage225_3.setVisible(true);lyr_ombrage_4.setVisible(true);lyr_courbes5m_5.setVisible(true);lyr_courbes25m_6.setVisible(true);lyr_saintloagglo_tourisme_sla_randonnees_7.setVisible(true);lyr_bt_pub_9.setVisible(true);lyr_bt_rel_10.setVisible(true);lyr_bt_leger_11.setVisible(true);lyr_SaintLoAgglo_LimiteAdministrative_12.setVisible(true);
-var layersList = [lyr_bd_alti_stlo_agglo_0,group_Ombrage,lyr_courbes5m_5,lyr_courbes25m_6,lyr_saintloagglo_tourisme_sla_randonnees_7,lyr_bt_pub_9,lyr_bt_rel_10,lyr_bt_leger_11,lyr_SaintLoAgglo_LimiteAdministrative_12];
+// --- WMTS Routes ---
+var projection_Routes_0 = ol.proj.get('EPSG:3857');
+var projectionExtent_Routes_0 = projection_Routes_0.getExtent();
+var size_Routes_0 = ol.extent.getWidth(projectionExtent_Routes_0) / 256;
+var resolutions_Routes_0 = new Array(14);
+var matrixIds_Routes_0 = new Array(14);
+for (var z = 0; z < 14; ++z) {
+    resolutions_Routes_0[z] = size_Routes_0 / Math.pow(2, z);
+    matrixIds_Routes_0[z] = z;
+}
+var lyr_Routes_0 = new ol.layer.Tile({
+    source: new ol.source.WMTS({
+        url: "https://data.geopf.fr/wmts",
+        attributions: ' ',
+        layer: "TRANSPORTNETWORKS.ROADS",
+        matrixSet: 'PM',
+        format: 'image/png',
+        projection: projection_Routes_0,
+        tileGrid: new ol.tilegrid.WMTS({
+            origin: ol.extent.getTopLeft(projectionExtent_Routes_0),
+            resolutions: resolutions_Routes_0,
+            matrixIds: matrixIds_Routes_0
+        }),
+        style: 'normal',
+        wrapX: true,
+        VERSION: "1.0.0",
+    }),
+    title: 'Routes',
+    opacity: 1.0,
+});
+
+// --- WMTS Hydrographie ---
+var projection_Hydro = ol.proj.get('EPSG:3857');
+var projectionExtent_Hydro = projection_Hydro.getExtent();
+var size_Hydro = ol.extent.getWidth(projectionExtent_Hydro) / 256;
+var resolutions_Hydro = new Array(14);
+var matrixIds_Hydro = new Array(14);
+for (var z = 0; z < 14; ++z) {
+    resolutions_Hydro[z] = size_Hydro / Math.pow(2, z);
+    matrixIds_Hydro[z] = z;
+}
+var lyr_Hydrographie_wmts = new ol.layer.Tile({
+    source: new ol.source.WMTS({
+        url: "https://data.geopf.fr/wmts",
+        attributions: ' ',
+        layer: "HYDROGRAPHY.HYDROGRAPHY",
+        matrixSet: 'PM',
+        format: 'image/png',
+        projection: projection_Hydro,
+        tileGrid: new ol.tilegrid.WMTS({
+            origin: ol.extent.getTopLeft(projectionExtent_Hydro),
+            resolutions: resolutions_Hydro,
+            matrixIds: matrixIds_Hydro
+        }),
+        style: 'normal',
+        wrapX: true,
+        VERSION: "1.0.0",
+    }),
+    title: 'Hydrographie',
+    opacity: 1.0,
+});
+
+var lyr_ParcellaireExpressbtimentnoir_1 = new ol.layer.Tile({
+                            source: new ol.source.TileWMS(({
+                              url: "https://data.geopf.fr/wms-v/ows?version%3D1.3.0",
+                              attributions: ' ',
+                              params: {
+                                "LAYERS": "parcellaire_express_batiment_noir",
+                                "TILED": "true",
+                                "VERSION": "1.3.0"},
+                            })),
+                            title: 'Parcellaire Express bâtiment noir',
+                            popuplayertitle: 'Parcellaire Express bâtiment noir',
+                            type: '',
+                            opacity: 1.000000,
+                          });
+              wms_layers.push([lyr_ParcellaireExpressbtimentnoir_1, 0]);
+
+// --- WMS Ortho Express 2025 ---
+var lyr_OrthoExpress2025_2 = new ol.layer.Tile({
+    source: new ol.source.TileWMS({
+        url: "https://data.geopf.fr/wms-r/wms",
+        attributions: ' ',
+        params: {
+            "LAYERS": "ORTHOIMAGERY.ORTHOPHOTOS",
+            "TILED": "true",
+            "VERSION": "1.3.0"
+        },
+    }),
+    title: 'Ortho Express 2025',
+    opacity: 1.0,
+});
+
+lyr_bd_alti_stlo_agglo_0.setVisible(true);lyr_ombrage45_1.setVisible(true);lyr_ombrage135_2.setVisible(true);lyr_ombrage225_3.setVisible(true);lyr_ombrage_4.setVisible(true);lyr_courbes5m_5.setVisible(true);lyr_courbes25m_6.setVisible(true);lyr_saintloagglo_tourisme_sla_randonnees_7.setVisible(true);lyr_bt_pub_9.setVisible(true);lyr_bt_rel_10.setVisible(true);lyr_bt_leger_11.setVisible(true);lyr_SaintLoAgglo_LimiteAdministrative_12.setVisible(true);lyr_Routes_0.setVisible(true);lyr_Hydrographie_wmts.setVisible(true);lyr_ParcellaireExpressbtimentnoir_1.setVisible(true);lyr_OrthoExpress2025_2.setVisible(false);
+var layersList = [
+    lyr_bd_alti_stlo_agglo_0,
+    lyr_OrthoExpress2025_2,
+    lyr_Routes_0,
+    lyr_Hydrographie_wmts,
+    group_Ombrage,
+    lyr_courbes5m_5,
+    lyr_courbes25m_6,
+    lyr_saintloagglo_tourisme_sla_randonnees_7,
+    lyr_bt_pub_9,
+    lyr_bt_rel_10,
+    lyr_bt_leger_11,
+    lyr_SaintLoAgglo_LimiteAdministrative_12,
+    lyr_ParcellaireExpressbtimentnoir_1
+];
 lyr_courbes5m_5.set('fieldAliases', {'fid': 'fid', 'ID': 'ID', 'ELEV': 'ELEV', });
 lyr_courbes25m_6.set('fieldAliases', {'fid': 'fid', 'ID': 'ID', 'ELEV': 'ELEV', });
-lyr_saintloagglo_tourisme_sla_randonnees_7.set('fieldAliases', {'nom': 'nom', 'type': 'type', 'distance': 'distance', 'temps': 'temps', 'difficulte': 'difficulte', 'categorie': 'categorie', 'depart': 'depart', 'denivele': 'denivele', 'gestionnai': 'gestionnai', 'lien': 'lien', });
+lyr_saintloagglo_tourisme_sla_randonnees_7.set('fieldAliases', {'nom': 'Nom', 'type': 'Type', 'distance': 'Distance en Km', 'temps': 'Temps en min', 'difficulte': 'Difficulté', 'categorie': 'Catégorie', 'depart': 'Départ', 'denivele': 'Dénivelé', 'gestionnai': 'Gestionnaire', 'lien': 'Lien web', });
 lyr_bt_pub_9.set('fieldAliases', {'gc_key': 'gc_key', 'angle': 'angle', 'nom': 'nom', 'planche': 'planche', 'lot_meta': 'lot_meta', 'affectat': 'affectat', });
 lyr_bt_rel_10.set('fieldAliases', {'gc_key': 'gc_key', 'angle': 'angle', 'nom': 'nom', 'planche': 'planche', 'lot_meta': 'lot_meta', });
 lyr_bt_leger_11.set('fieldAliases', {'gc_key': 'gc_key', 'angle': 'angle', 'nom': 'nom', 'planche': 'planche', 'lot_meta': 'lot_meta', });
