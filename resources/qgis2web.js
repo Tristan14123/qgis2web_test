@@ -83,6 +83,76 @@ styleCursorMove();
     });
     map.addControl(bottomRightContainer)
 
+// Ajouter le contrôle d'échelle
+var scaleLineControl = new ol.control.ScaleLine({
+    units: 'metric',
+    bar: true,
+    steps: 4,
+    text: true,
+    minWidth: 140,
+    className: 'ol-scale-line custom-scale-line'
+});
+map.addControl(scaleLineControl);
+
+// Forcer l'affichage de l'échelle
+setTimeout(function() {
+    scaleLineControl.element.style.display = 'block';
+    scaleLineControl.element.style.visibility = 'visible';
+}, 1000);
+
+// Ajouter la flèche du nord
+var northArrowControl = new ol.control.Control({
+    element: document.createElement('div'),
+    render: function(mapEvent) {
+        var element = this.element;
+        element.className = 'ol-north-arrow custom-north-arrow';
+        element.innerHTML = '<i class="fas fa-arrow-up"></i>';
+        element.style.position = 'absolute';
+        element.style.bottom = '20px';
+        element.style.left = '20px';
+        element.style.width = '40px';
+        element.style.height = '40px';
+        element.style.display = 'flex';
+        element.style.alignItems = 'center';
+        element.style.justifyContent = 'center';
+        element.style.background = 'rgba(255, 255, 255, 0.9)';
+        element.style.borderRadius = '50%';
+        element.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+        element.style.border = '2px solid #3498db';
+        element.style.color = '#3498db';
+        element.style.fontSize = '18px';
+        element.style.fontWeight = 'bold';
+        element.style.transform = 'rotate(0deg)';
+        element.style.transition = 'transform 0.3s ease';
+        element.style.zIndex = '1000';
+        element.style.cursor = 'pointer';
+        element.title = 'Flèche du Nord (cliquer pour réinitialiser)';
+        
+        // Forcer l'affichage
+        element.style.display = 'flex';
+        element.style.visibility = 'visible';
+        
+        // Ajouter un clic pour réinitialiser la rotation
+        element.onclick = function() {
+            var view = mapEvent.map.getView();
+            view.animate({
+                rotation: 0,
+                duration: 500
+            });
+        };
+    }
+});
+map.addControl(northArrowControl);
+
+// Forcer l'affichage de la flèche du nord
+setTimeout(function() {
+    var northArrow = document.querySelector('.custom-north-arrow');
+    if (northArrow) {
+        northArrow.style.display = 'flex';
+        northArrow.style.visibility = 'visible';
+    }
+}, 1000);
+
 //popup
 var container = document.getElementById('popup');
 var content = document.getElementById('popup-content');
@@ -147,11 +217,35 @@ var featureOverlay = new ol.layer.Vector({
     updateWhileInteracting: true // optional, for instant visual feedback
 });
 
-var doHighlight = false;
-var doHover = false;
+var doHighlight = true;
+var doHover = true;
 
 function createPopupField(currentFeature, currentFeatureKeys, layer) {
     var popupText = '';
+    
+    // Special handling for hiking layer - force display field names
+    if (layer.get('popuplayertitle') === 'saintloagglo_tourisme_sla_randonnees') {
+        var fieldOrder = ['nom', 'type', 'distance', 'temps', 'difficulte', 'categorie', 'depart', 'denivele', 'gestionnai', 'lien'];
+        var fieldAliases = layer.get('fieldAliases') || {};
+        
+        for (var i = 0; i < fieldOrder.length; i++) {
+            var key = fieldOrder[i];
+            var value = currentFeature.get(key);
+            if (value != null && value !== '') {
+                var alias = fieldAliases[key] || key;
+                popupText += '<tr><th>' + alias + '</th><td>';
+                
+                if (key === 'lien') {
+                    popupText += '<a href="' + value + '" target="_blank">' + value + '</a></td></tr>';
+                } else {
+                    popupText += autolinker.link(value.toLocaleString()) + '</td></tr>';
+                }
+            }
+        }
+        return popupText;
+    }
+    
+    // Default behavior for other layers
     for (var i = 0; i < currentFeatureKeys.length; i++) {
         if (currentFeatureKeys[i] != 'geometry' && currentFeatureKeys[i] != 'layerObject' && currentFeatureKeys[i] != 'idO') {
             var popupField = '';
@@ -200,6 +294,11 @@ function createPopupField(currentFeature, currentFeatureKeys, layer) {
 var highlight;
 var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
 
+// Variables pour le délai du popup
+var hoverTimeout;
+var hoverFeature = null;
+var hoverCoord = null;
+
 function onPointerMove(evt) {
     if (!doHover && !doHighlight) {
         return;
@@ -212,6 +311,12 @@ function onPointerMove(evt) {
     var clusteredFeatures;
     var clusterLength;
     var popupText = '<ul>';
+
+    // Annuler le timeout précédent
+    if (hoverTimeout) {
+        clearTimeout(hoverTimeout);
+        hoverTimeout = null;
+    }
 
     // Collect all features and their layers at the pixel
     var featuresAndLayers = [];
@@ -324,12 +429,24 @@ function onPointerMove(evt) {
 
     if (doHover) {
         if (popupText) {
-			content.innerHTML = popupText;
-            container.style.display = 'block';
-            overlayPopup.setPosition(coord);
+            // Stocker les infos pour le timeout
+            hoverFeature = popupText;
+            hoverCoord = coord;
+            
+            // Démarrer le timeout de 1 seconde
+            hoverTimeout = setTimeout(function() {
+                if (hoverFeature) {
+                    content.innerHTML = hoverFeature;
+                    container.style.display = 'block';
+                    overlayPopup.setPosition(hoverCoord);
+                }
+            }, 1000);
         } else {
+            // Masquer immédiatement si pas de feature
             container.style.display = 'none';
             closer.blur();
+            hoverFeature = null;
+            hoverCoord = null;
         }
     }
 };
@@ -398,6 +515,7 @@ function onSingleClickFeatures(evt) {
             }
         }
     });
+    
     if (popupText === '<ul>') {
         popupText = '';
     } else {
