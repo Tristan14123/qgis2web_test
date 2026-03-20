@@ -1,66 +1,3475 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
-        <meta name="mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <link rel="stylesheet" href="./resources/ol.css">
-        <link rel="stylesheet" href="resources/fontawesome-all.min.css">
-        <link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
-        <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
-        <link rel="stylesheet" href="./resources/qgis2web.css">
-        <style>
-        html, body {
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="description" content="Carte interactive de l'agglomération de Saint-Lô - Explorez les sentiers de randonnée, les courbes topographiques et les informations géographiques">
+    <meta name="keywords" content="Saint-Lô, Agglomération, carte, randonnée, topographie, sentiers, GIS">
+    <meta name="author" content="La Vire à Pied">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Carte Interactive - Saint-Lô Agglo Rando">
+    <meta property="og:description" content="Explorez la carte interactive de Saint-Lô Agglomération avec les sentiers de randonnée et données topographiques">
+    <meta property="og:type" content="website">
+    
+    <title>Carte Interactive - Saint-Lô Agglo Rando</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+    
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="./resources/ol.css">
+    <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+    <link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+    <link rel="stylesheet" href="./resources/qgis2web.css">
+    
+    <!-- Professional Styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --text-light: #ecf0f1;
+            --text-dark: #2c3e50;
+            --bg-light: #f8f9fa;
+            --bg-dark: #34495e;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
             background-color: #ffffff;
         }
-        .ol-control > * {
-            background-color: #f8f8f8!important;
-            color: #444444!important;
-            border-radius: 0px;
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-light);
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 1000;
         }
-        .ol-attribution a, .gcd-gl-input::placeholder, .search-layer-input-search::placeholder {
-            color: #444444!important;
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .search-layer-input-search {
-            background-color: #f8f8f8!important;
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .ol-control > *:focus, .ol-control >*:hover {
-            background-color: rgba(248, 248, 248, 0.7)!important;
-        } 
-        .ol-control {
-            background-color: rgba(255,255,255,.4) !important;
-            padding: 2px !important;
-        } 
-        </style>
-
-        <style>
-        html, body, #map {
+        
+        .logo i {
+            font-size: 2rem;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+        
+        nav a:hover {
+            color: var(--accent-color);
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(44, 62, 80, 0.8), rgba(52, 152, 219, 0.8)),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400"><rect fill="%23f0f0f0" width="1200" height="400"/><path fill="%23ddd" d="M0,200 Q300,100 600,200 T1200,200 L1200,400 L0,400 Z"/></svg>');
+            background-size: cover;
+            background-position: center;
+            color: var(--text-light);
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 1s ease 0.2s;
+            animation-fill-mode: both;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease 0.4s;
+            animation-fill-mode: both;
+        }
+        
+        .cta-button:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        /* Main Content */
+        main {
+            min-height: 100vh;
+        }
+        
+        /* Map Container */
+        .map-section {
+            position: relative;
+            height: 100vh;
+            background: var(--bg-light);
+        }
+        
+        #map {
             width: 100%;
             height: 100%;
+            position: relative;
+        }
+        
+        /* Map Controls Enhancement */
+        .ol-control > * {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            color: var(--text-dark) !important;
+            border-radius: 8px !important;
+            box-shadow: var(--shadow) !important;
+            border: 1px solid rgba(0,0,0,0.1) !important;
+        }
+        
+        .ol-attribution a, .gcd-gl-input::placeholder, .search-layer-input-search::placeholder {
+            color: var(--text-dark) !important;
+        }
+        
+        .search-layer-input-search {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 8px !important;
+        }
+        
+        .ol-control > *:focus, .ol-control > *:hover {
+            background-color: rgba(255, 255, 255, 1) !important;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-hover) !important;
+        }
+        
+        .ol-control {
+            background-color: rgba(255,255,255,0.1) !important;
+            padding: 4px !important;
+        }
+        
+        /* Info Sections */
+        .info-section {
+            padding: 4rem 0;
+            background: var(--bg-light);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--primary-color);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .feature-card[onclick]:hover {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-color: var(--secondary-color);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            padding: 3rem 0 1rem;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-section a:hover {
+            color: var(--secondary-color);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 1rem;
+            margin-top: 2rem;
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 0.5rem 1rem;
+            }
+            
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+            
+            nav {
+                display: none;
+                width: 100%;
+                background: rgba(255,255,255,0.98);
+                border-radius: 8px;
+                padding: 1rem;
+                margin-top: 0.5rem;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            
+            nav.active {
+                display: block;
+            }
+            
+            .hero {
+                padding: 3rem 1rem;
+                text-align: center;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+                line-height: 1.2;
+                margin-bottom: 1rem;
+            }
+            
+            .hero p {
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .cta-button {
+                padding: 12px 24px;
+                font-size: 0.9rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .feature-card {
+                padding: 1.5rem;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+            
+            /* Responsive Layer Control */
+            .layer-control {
+                position: fixed;
+                top: 0;
+                right: 0;
+                left: 0;
+                bottom: 0;
+                background: rgba(255, 255, 255, 0.98);
+                border-radius: 0;
+                padding: 0;
+                box-shadow: none;
+                z-index: 10000;
+                min-width: auto;
+                max-height: 100vh;
+                overflow-y: auto;
+                backdrop-filter: blur(10px);
+                border: none;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .layer-control.hidden {
+                transform: translateX(100%);
+                opacity: 1;
+                pointer-events: none;
+            }
+            
+            .layer-control:not(.hidden) {
+                transform: translateX(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            
+            .layer-control h3 {
+                position: sticky;
+                top: 0;
+                background: rgba(255,255,255,0.98);
+                backdrop-filter: blur(10px);
+                z-index: 10;
+                padding: 1rem;
+                margin: 0;
+                border-bottom: 1px solid rgba(0,0,0,0.1);
+                font-size: 1.1rem;
+            }
+            
+            .layer-control .close-btn {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+            
+            .layer-group {
+                margin: 0;
+                padding: 1rem;
+                border-bottom: 1px solid rgba(0,0,0,0.05);
+            }
+            
+            .layer-group-title {
+                font-size: 0.9rem;
+                margin-bottom: 0.8rem;
+            }
+            
+            .layer-item {
+                padding: 0.8rem;
+                margin: 0.4rem 0;
+            }
+            
+            .layer-name {
+                font-size: 0.85rem;
+            }
+            
+            .layer-icon {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .layer-icon i {
+                font-size: 8px;
+            }
+            
+            .layer-toggle {
+                width: 36px;
+                height: 20px;
+            }
+            
+            .layer-toggle::after {
+                width: 14px;
+                height: 14px;
+                top: 3px;
+                left: 3px;
+            }
+            
+            .layer-toggle.active::after {
+                transform: translateX(16px);
+            }
+            
+            /* Responsive filters */
+            .filter-section {
+                margin-bottom: 1rem;
+            }
+            
+            .filter-label {
+                font-size: 0.8rem;
+                margin-bottom: 0.3rem;
+            }
+            
+            .filter-select {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+            
+            .reset-filters-btn {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+            
+            /* Responsive search */
+            .hiking-search-input {
+                padding: 10px 35px 10px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .hiking-results {
+                max-height: 120px;
+            }
+            
+            /* Responsive popup */
+            .ol-popup {
+                min-width: 280px !important;
+                max-width: 320px !important;
+                left: -40px !important;
+            }
+            
+            .ol-popup-content {
+                padding: 16px !important;
+            }
+            
+            .ol-popup-content h3 {
+                font-size: 1rem !important;
+                margin-bottom: 12px !important;
+            }
+            
+            .ol-popup-content td {
+                padding: 8px 6px !important;
+                font-size: 13px !important;
+            }
+            
+            .ol-popup-content td:first-child {
+                width: 45% !important;
+            }
+            
+            /* Responsive map */
+            #map {
+                height: 60vh !important;
+                min-height: 400px;
+            }
+            
+            .layer-toggle-button {
+                top: 15px !important;
+                right: 15px !important;
+                width: 50px !important;
+                height: 50px !important;
+                font-size: 18px !important;
+            }
+            
+            .highlight-info {
+                top: 70px !important;
+                left: 15px !important;
+                right: 15px;
+                font-size: 0.85rem;
+                padding: 8px 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+            
+            .hero p {
+                font-size: 0.9rem;
+            }
+            
+            .layer-control h3 {
+                font-size: 1rem;
+                padding: 0.8rem 1rem;
+            }
+            
+            .layer-group {
+                padding: 0.8rem;
+            }
+            
+            .layer-item {
+                padding: 0.6rem;
+            }
+            
+            .ol-popup {
+                min-width: 260px !important;
+                max-width: 300px !important;
+            }
+            
+            .ol-popup-content {
+                padding: 12px !important;
+            }
+            
+            .ol-popup-content td {
+                padding: 6px 4px !important;
+                font-size: 12px !important;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--bg-light);
+            border-top: 3px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Custom Layer Control */
+        .layer-control {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            min-width: 280px;
+            max-height: 80vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .layer-control.hidden {
+            transform: translateX(calc(100% + 20px));
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .layer-toggle-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--secondary-color);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            z-index: 1001;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 18px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .layer-toggle-button:hover {
+            background: #2980b9;
+            transform: scale(1.1);
+            box-shadow: var(--shadow-hover);
+            color: white;
+        }
+        
+        .layer-toggle-button.active {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .layer-toggle-button.active:hover {
+            background: #c0392b;
+        }
+        
+        .layer-control h3 {
+            margin: 0 0 15px 0;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .layer-control h3 .title-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .layer-control h3 i {
+            color: var(--secondary-color);
+        }
+        
+        .layer-control .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+        
+        .layer-control .close-btn:hover {
+            background: rgba(0,0,0,0.1);
+            color: var(--accent-color);
+        }
+        
+        .layer-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: var(--bg-light);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .layer-item:hover {
+            background: #e8f4f8;
+            transform: translateX(-2px);
+        }
+        
+        .layer-item.active {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .layer-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .layer-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .layer-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .layer-toggle {
+            width: 44px;
+            height: 24px;
+            background: #ddd;
+            border-radius: 12px;
+            position: relative;
+            transition: background 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .layer-toggle.active {
+            background: var(--secondary-color);
+        }
+        
+        .layer-toggle::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .layer-toggle.active::after {
+            transform: translateX(20px);
+        }
+        
+        .layer-group {
+            margin-bottom: 15px;
+        }
+        
+        .layer-group-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* Hiking Search and Highlight */
+        .hiking-search {
+            position: absolute;
+            top: 70px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            z-index: 999;
+            min-width: 300px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .hiking-search.hidden {
+            transform: translateX(calc(100% + 20px));
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .hiking-search h4 {
+            margin: 0 0 12px 0;
+            color: var(--primary-color);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .hiking-search h4 i {
+            color: var(--secondary-color);
+        }
+        
+        .search-input-container {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .hiking-search-input {
+            width: 100%;
+            padding: 10px 40px 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .hiking-search-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .search-clear-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        
+        .search-clear-btn:hover {
+            background: #f0f0f0;
+            color: var(--accent-color);
+        }
+        
+        .hiking-results {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .hiking-result-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        
+        .hiking-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .hiking-result-item:hover {
+            background: var(--bg-light);
+            padding-left: 16px;
+        }
+        
+        .hiking-result-item.highlighted {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .hiking-result-name {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .hiking-result-details {
+            font-size: 12px;
+            opacity: 0.8;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .hiking-result-details span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            font-style: italic;
+        }
+        
+        .highlight-info {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: var(--secondary-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .highlight-info.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Mobile responsive for hiking search */
+        @media (max-width: 768px) {
+            .hiking-search {
+                top: 120px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+        
+        /* Animation for click feedback */
+        @keyframes fadeInOut {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+        }
+        
+        /* Custom Popup Styles for Hiking - Override OpenLayers */
+        .ol-popup {
+            position: absolute !important;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08) !important;
+            border-radius: 16px !important;
+            padding: 0 !important;
+            border: 1px solid rgba(255,255,255,0.8) !important;
+            bottom: 12px !important;
+            left: -50px !important;
+            min-width: 320px !important;
+            max-width: 400px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            backdrop-filter: blur(10px) !important;
+            animation: popupFadeIn 0.3s ease-out !important;
+        }
+        
+        @keyframes popupFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .ol-popup:after, .ol-popup:before {
+            top: 100% !important;
+            border: solid transparent !important;
+            content: " " !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
+        }
+        
+        .ol-popup:after {
+            border-color: rgba(255, 255, 255, 0) !important;
+            border-top-color: #ffffff !important;
+            border-width: 10px !important;
+            left: 48px !important;
+            margin-left: -10px !important;
+        }
+        
+        .ol-popup:before {
+            border-color: rgba(0, 0, 0, 0) !important;
+            border-top-color: rgba(0,0,0,0.1) !important;
+            border-width: 11px !important;
+            left: 48px !important;
+            margin-left: -11px !important;
+        }
+        
+        .ol-popup-closer {
+            text-decoration: none !important;
+            position: absolute !important;
+            top: 12px !important;
+            right: 12px !important;
+            width: 28px !important;
+            height: 28px !important;
+            background: linear-gradient(135deg, var(--accent-color), #c0392b) !important;
+            color: white !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 14px !important;
+            transition: all 0.3s ease !important;
+            z-index: 10 !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        }
+        
+        .ol-popup-closer:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226) !important;
+            transform: scale(1.1) rotate(90deg) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+        }
+        
+        .ol-popup-content {
+            padding: 24px !important;
+            margin: 0 !important;
+            line-height: 1.6 !important;
+            background: transparent !important;
+        }
+        
+        .ol-popup-content h3 {
+            margin: 0 0 20px 0 !important;
+            color: var(--primary-color) !important;
+            font-size: 1.2rem !important;
+            font-weight: 700 !important;
+            padding-bottom: 12px !important;
+            border-bottom: 3px solid var(--secondary-color) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+        }
+        
+        .ol-popup-content h3 i {
+            color: var(--secondary-color) !important;
+            font-size: 1.1em !important;
+        }
+        
+        .ol-popup-content table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin: 0 !important;
+            background: rgba(255,255,255,0.5) !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+        }
+        
+        .ol-popup-content tr:first-child {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9) !important;
+            color: white !important;
+            font-weight: 600 !important;
+        }
+        
+        .ol-popup-content tr {
+            border-bottom: 1px solid rgba(240,240,240,0.8) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .ol-popup-content tr:last-child {
+            border-bottom: none !important;
+        }
+        
+        .ol-popup-content tr:hover {
+            background: rgba(52, 152, 219, 0.05) !important;
+            transform: translateX(2px) !important;
+        }
+        
+        .ol-popup-content td {
+            padding: 12px 8px !important;
+            vertical-align: top !important;
+            font-size: 14px !important;
+        }
+        
+        .ol-popup-content td:first-child {
+            font-weight: 700 !important;
+            color: var(--primary-color) !important;
+            width: 40% !important;
+            white-space: nowrap !important;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.1) !important;
+        }
+        
+        .ol-popup-content tr:first-child td:first-child {
+            color: white !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+        }
+        
+        .ol-popup-content td:last-child {
+            color: #2c3e50 !important;
+            word-break: break-word !important;
+            font-weight: 500 !important;
+        }
+        
+        .ol-popup-content tr:first-child td:last-child {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 600 !important;
+        }
+        
+        .ol-popup-content a {
+            color: var(--secondary-color) !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            padding: 2px 4px !important;
+            border-radius: 4px !important;
+            display: inline-block !important;
+        }
+        
+        .ol-popup-content a:hover {
+            color: white !important;
+            background: var(--secondary-color) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3) !important;
+        }
+        
+        .ol-popup-content .popup-difficulty {
+            display: inline-block !important;
+            padding: 2px 8px !important;
+            border-radius: 12px !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            margin-top: 2px !important;
+        }
+        
+        /* Styles pour les filtres de randonnée */
+        .filter-section {
+            margin-bottom: 12px;
+        }
+        
+        .filter-label {
+            font-size: 11px;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .filter-select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-select:hover {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .reset-filters-btn {
+            width: 100%;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .reset-filters-btn:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+        }
+        
+        .reset-filters-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Styles pour les curseurs d'opacité */
+        .layer-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .layer-opacity-control {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            max-width: 0;
+            overflow: hidden;
+        }
+        
+        .layer-item:hover .layer-opacity-control {
+            opacity: 1;
+            max-width: 120px;
+        }
+        
+        .opacity-slider {
+            width: 80px;
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .opacity-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .opacity-slider::-webkit-slider-thumb:hover {
+            background: var(--primary-color);
+            transform: scale(1.2);
+        }
+        
+        .opacity-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        
+        .opacity-slider::-moz-range-thumb:hover {
+            background: var(--primary-color);
+            transform: scale(1.2);
+        }
+        
+        .opacity-value {
+            font-size: 10px;
+            color: #666;
+            font-weight: 500;
+            min-width: 30px;
+            text-align: right;
+        }
+        
+        /* Styles pour le widget météo */
+        .weather-widget {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+        
+        .weather-loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .weather-loading i {
+            font-size: 16px;
+        }
+        
+        .weather-loading span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .weather-content {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .weather-location {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .weather-location i {
+            font-size: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .weather-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
+            border-radius: 8px;
+            color: white;
+        }
+        
+        .weather-icon-container {
+            font-size: 24px;
+        }
+        
+        .weather-temp {
+            text-align: center;
+        }
+        
+        .temp-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .temp-unit {
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+        
+        .weather-desc {
+            font-size: 11px;
+            text-align: right;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+        
+        .weather-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .weather-detail {
+            text-align: center;
+            padding: 8px 4px;
+            background: rgba(52, 152, 219, 0.05);
+            border-radius: 6px;
+            border: 1px solid rgba(52, 152, 219, 0.1);
+        }
+        
+        .weather-detail i {
+            display: block;
+            font-size: 12px;
+            color: var(--secondary-color);
+            margin-bottom: 4px;
+        }
+        
+        .detail-label {
+            display: block;
+            font-size: 9px;
+            color: #666;
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            display: block;
+            font-size: 11px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .weather-forecast {
+            margin-bottom: 12px;
+        }
+        
+        .forecast-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .forecast-items {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        
+        .forecast-item {
+            text-align: center;
+            padding: 8px 4px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 6px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .forecast-time {
+            font-size: 9px;
+            color: #666;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        
+        .forecast-icon {
+            font-size: 14px;
+            color: var(--secondary-color);
+            margin-bottom: 4px;
+            display: block;
+        }
+        
+        .forecast-temp {
+            font-size: 10px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .weather-update {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 9px;
+            color: #999;
+            padding: 8px;
+            background: rgba(0,0,0,0.02);
+            border-radius: 4px;
+        }
+        
+        .weather-update i {
+            font-size: 8px;
+        }
+        
+        .update-time {
+            font-weight: 500;
+        }
+        
+        /* Responsive pour le widget météo */
+        @media (max-width: 768px) {
+            .weather-widget {
+                padding: 12px;
+                margin: 6px 0;
+            }
+            
+            .weather-main {
+                padding: 10px;
+            }
+            
+            .temp-value {
+                font-size: 18px;
+            }
+            
+            .weather-details {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            
+            .weather-detail {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 6px 8px;
+            }
+            
+            .weather-detail i {
+                margin-bottom: 0;
+                margin-right: 8px;
+            }
+            
+            .detail-label,
+            .detail-value {
+                display: inline;
+            }
+            
+            .forecast-items {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 4px;
+            }
+            
+            .forecast-item {
+                padding: 6px 2px;
+            }
+        }
+        
+        /* Styles pour l'échelle et la flèche du nord */
+        .ol-scale-line, .custom-scale-line {
+            position: absolute !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 2px solid var(--secondary-color) !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 12px !important;
+            color: var(--primary-color) !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+            z-index: 1000 !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .ol-scale-line-inner, .custom-scale-line .ol-scale-line-inner {
+            border: none !important;
+            border-top: 2px solid var(--primary-color) !important;
+            color: var(--primary-color) !important;
+            font-weight: 600 !important;
+            margin: 0 !important;
+        }
+        
+        .ol-north-arrow, .custom-north-arrow {
+            position: absolute !important;
+            bottom: 20px !important;
+            left: 20px !important;
+            width: 40px !important;
+            height: 40px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 50% !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+            border: 2px solid #3498db !important;
+            color: #3498db !important;
+            font-size: 18px !important;
+            font-weight: bold !important;
+            transform: rotate(0deg) !important;
+            transition: all 0.3s ease !important;
+            z-index: 1000 !important;
+            cursor: pointer !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .ol-north-arrow:hover, .custom-north-arrow:hover {
+            background: rgba(52, 152, 219, 0.1) !important;
+            transform: scale(1.1) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+        }
+        
+        .ol-north-arrow:active, .custom-north-arrow:active {
+            transform: scale(0.95) !important;
+        }
+        
+        /* Responsive pour l'échelle et la flèche du nord */
+        @media (max-width: 768px) {
+            .ol-scale-line {
+                bottom: 15px !important;
+                right: 15px !important;
+                padding: 6px 10px !important;
+                font-size: 11px !important;
+                min-width: 120px !important;
+            }
+            
+            .ol-north-arrow {
+                bottom: 15px !important;
+                left: 15px !important;
+                width: 35px !important;
+                height: 35px !important;
+                font-size: 16px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .ol-scale-line {
+                bottom: 10px !important;
+                right: 10px !important;
+                padding: 4px 8px !important;
+                font-size: 10px !important;
+                min-width: 100px !important;
+            }
+            
+            .ol-north-arrow {
+                bottom: 10px !important;
+                left: 10px !important;
+                width: 30px !important;
+                height: 30px !important;
+                font-size: 14px !important;
+            }
+        }
+        
+        /* Responsive pour les curseurs d'opacité */
+        @media (max-width: 768px) {
+            .layer-controls {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 6px;
+            }
+            
+            .layer-opacity-control {
+                opacity: 1;
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .opacity-slider {
+                width: 100%;
+                max-width: 100px;
+            }
+            
+            .opacity-value {
+                font-size: 9px;
+                min-width: 25px;
+            }
+        }
+        
+        .popup-difficulty.très-facile {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .popup-difficulty.facile {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .popup-difficulty.moyen {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .popup-difficulty.difficile {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Custom Popup Styles for Hiking */
+        .ol-popup {
+            position: absolute;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 12px;
             padding: 0;
+            border: none;
+            bottom: 12px;
+            left: -50px;
+            min-width: 280px;
+            max-width: 350px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .ol-popup:after, .ol-popup:before {
+            top: 100%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        .ol-popup:after {
+            border-color: rgba(255, 255, 255, 0);
+            border-top-color: white;
+            border-width: 10px;
+            left: 48px;
+            margin-left: -10px;
+        }
+        
+        .ol-popup:before {
+            border-color: rgba(0, 0, 0, 0);
+            border-top-color: #ddd;
+            border-width: 11px;
+            left: 48px;
+            margin-left: -11px;
+        }
+        
+        .ol-popup-closer {
+            text-decoration: none;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .ol-popup-closer:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+        
+        .ol-popup-content {
+            padding: 20px;
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .ol-popup-content h3 {
+            margin: 0 0 15px 0;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ol-popup-content h3 i {
+            color: var(--secondary-color);
+        }
+        
+        .ol-popup-content table {
+            width: 100%;
+            border-collapse: collapse;
             margin: 0;
         }
-        </style>
-        <title></title>
-    </head>
-    <body>
-        <div id="map">
-            <div id="popup" class="ol-popup">
-                <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-                <div id="popup-content"></div>
+        
+        .ol-popup-content tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+        }
+        
+        .ol-popup-content tr:last-child {
+            border-bottom: none;
+        }
+        
+        .ol-popup-content tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .ol-popup-content td {
+            padding: 8px 4px;
+            vertical-align: top;
+            font-size: 14px;
+        }
+        
+        .ol-popup-content td:first-child {
+            font-weight: 600;
+            color: var(--primary-color);
+            width: 35%;
+            white-space: nowrap;
+        }
+        
+        .ol-popup-content td:last-child {
+            color: #555;
+            word-break: break-word;
+        }
+        
+        .ol-popup-content a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .ol-popup-content a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        
+        .ol-popup-content .popup-difficulty {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+        
+        .popup-difficulty.très-facile {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .popup-difficulty.facile {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .popup-difficulty.moyen {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .popup-difficulty.difficile {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <a href="#home" class="logo">
+                <i class="fas fa-map-marked-alt"></i>
+                La Vire à Pied 🚶‍♂️ 
+            </a>
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav id="navigation">
+                <ul>
+                    <li><a href="#home">Accueil</a></li>
+                    <li><a href="#map-section">Carte</a></li>
+                    <li><a href="#features">Fonctionnalités</a></li>
+                    <li><a href="#about">À propos</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="container">
+                <h1>Carte Interactive des randonnées de Saint-Lô Agglo</h1>
+                <p>Explorez les sentiers de randonnée, découvrez les courbes topographiques et accédez à toutes les informations géographiques de notre territoire.</p>
+                <a href="#map-section" class="cta-button">Explorer la carte</a>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section class="map-section" id="map-section">
+            <div id="map">
+                <div id="popup" class="ol-popup">
+                    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                    <div id="popup-content"></div>
+                </div>
+                
+                <!-- Layer Toggle Button -->
+                <button class="layer-toggle-button" id="layerToggleButton" title="Afficher/Masquer les couches">
+                    <i class="fas fa-map"></i>
+                </button>
+                
+                <!-- Highlight Info -->
+                <div class="highlight-info" id="highlightInfo">
+                    <i class="fas fa-highlighter"></i> <span id="highlightedTrailName"></span> en surbrillance
+                </div>
+                
+                <!-- Custom Layer Control -->
+                <div class="layer-control hidden" id="layerControl">
+                    <h3>
+                        <span class="title-text">
+                            <i class="fas fa-layer-group"></i>
+                            Contrôle des Couches
+                        </span>
+                        <button class="close-btn" id="closeLayerControl" title="Fermer">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </h3>
+                    
+                    <div class="layer-group">
+                        <div class="layer-group-title">Topographie</div>
+                        <div class="layer-item" data-layer="lyr_bd_alti_stlo_agglo_0">
+                            <div class="layer-info">
+                                <div class="layer-icon" style="background: linear-gradient(45deg, #8B4513, #D2691E);">
+                                    <i class="fas fa-mountain" style="color: white; font-size: 10px;"></i>
+                                </div>
+                                <div class="layer-name">Altitude</div>
+                            </div>
+                            <div class="layer-controls">
+                                <div class="layer-toggle active"></div>
+                                <div class="layer-opacity-control">
+                                    <input type="range" class="opacity-slider" min="0" max="100" value="100" data-layer="lyr_bd_alti_stlo_agglo_0">
+                                    <span class="opacity-value">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="layer-item" data-layer="lyr_Routes_0">
+                            <div class="layer-info">
+                                <div class="layer-icon" style="background: linear-gradient(45deg, #4169E1, #1E90FF);">
+                                    <i class="fas fa-road" style="color: white; font-size: 10px;"></i>
+                                </div>
+                                <div class="layer-name">Routes</div>
+                            </div>
+                            <div class="layer-controls">
+                                <div class="layer-toggle active"></div>
+                                <div class="layer-opacity-control">
+                                    <input type="range" class="opacity-slider" min="0" max="100" value="100" data-layer="lyr_Routes_0">
+                                    <span class="opacity-value">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="layer-item" data-layer="lyr_Hydrographie_wmts">
+                            <div class="layer-info">
+                                <div class="layer-icon" style="background: linear-gradient(45deg, #00CED1, #4682B4);">
+                                    <i class="fas fa-water" style="color: white; font-size: 10px;"></i>
+                                </div>
+                                <div class="layer-name">Hydrographie</div>
+                            </div>
+                            <div class="layer-controls">
+                                <div class="layer-toggle active"></div>
+                                <div class="layer-opacity-control">
+                                    <input type="range" class="opacity-slider" min="0" max="100" value="100" data-layer="lyr_Hydrographie_wmts">
+                                    <span class="opacity-value">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="layer-item" data-layer="lyr_OrthoExpress2025_2">
+                            <div class="layer-info">
+                                <div class="layer-icon" style="background: linear-gradient(45deg, #228B22, #32CD32);">
+                                    <i class="fas fa-satellite" style="color: white; font-size: 10px;"></i>
+                                </div>
+                                <div class="layer-name">Ortho Express 2025</div>
+                            </div>
+                            <div class="layer-controls">
+                                <div class="layer-toggle"></div>
+                                <div class="layer-opacity-control">
+                                    <input type="range" class="opacity-slider" min="0" max="100" value="100" data-layer="lyr_OrthoExpress2025_2">
+                                    <span class="opacity-value">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="layer-item" data-layer="group_Ombrage">
+                            <div class="layer-info">
+                                <div class="layer-icon" style="background: linear-gradient(45deg, #696969, #A9A9A9);">
+                                    <i class="fas fa-adjust" style="color: white; font-size: 10px;"></i>
+                                </div>
+                                <div class="layer-name">Ombrage</div>
+                            </div>
+                            <div class="layer-controls">
+                                <div class="layer-toggle active"></div>
+                                <div class="layer-opacity-control">
+                                    <input type="range" class="opacity-slider" min="0" max="100" value="100" data-layer="group_Ombrage">
+                                    <span class="opacity-value">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="layer-group">
+                        <div class="layer-group-title">Courbes de Niveau</div>
+                        <div class="layer-item" data-layer="lyr_courbes5m_5">
+                            <div class="layer-info">
+                                <div class="layer-icon" style="background: #228B22;">
+                                    <span style="color: white; font-size: 8px; font-weight: bold;">5m</span>
+                                </div>
+                                <div class="layer-name">Courbes - 5m</div>
+                            </div>
+                            <div class="layer-controls">
+                                <div class="layer-toggle active"></div>
+                                <div class="layer-opacity-control">
+                                    <input type="range" class="opacity-slider" min="0" max="100" value="100" data-layer="lyr_courbes5m_5">
+                                    <span class="opacity-value">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="layer-item" data-layer="lyr_courbes25m_6">
+                            <div class="layer-info">
+                                <div class="layer-icon" style="background: #32CD32;">
+                                    <span style="color: white; font-size: 8px; font-weight: bold;">25m</span>
+                                </div>
+                                <div class="layer-name">Courbes - 25m</div>
+                            </div>
+                            <div class="layer-controls">
+                                <div class="layer-toggle active"></div>
+                                <div class="layer-opacity-control">
+                                    <input type="range" class="opacity-slider" min="0" max="100" value="100" data-layer="lyr_courbes25m_6">
+                                    <span class="opacity-value">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="layer-group">
+                        <div class="layer-group-title">Randonnée</div>
+                        <div class="layer-item" data-layer="lyr_saintloagglo_tourisme_sla_randonnees_7">
+                            <div class="layer-info">
+                                <div class="layer-icon" style="background: #ff47ff;">
+                                    <i class="fas fa-hiking" style="color: white; font-size: 10px;"></i>
+                                </div>
+                                <div class="layer-name">Sentiers de Randonnée</div>
+                            </div>
+                            <div class="layer-controls">
+                                <div class="layer-toggle active"></div>
+                                <div class="layer-opacity-control">
+                                    <input type="range" class="opacity-slider" min="0" max="100" value="100" data-layer="lyr_saintloagglo_tourisme_sla_randonnees_7">
+                                    <span class="opacity-value">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Filtres de randonnée -->
+                        <div class="layer-item" style="padding: 0; margin: 8px 0; background: transparent;">
+                            <div style="padding: 12px;">
+                                <div style="font-size: 12px; color: var(--primary-color); margin-bottom: 12px; font-weight: 500;">
+                                    <i class="fas fa-filter" style="color: var(--secondary-color); margin-right: 4px;"></i>
+                                    Filtres de randonnée
+                                </div>
+                                
+                                <!-- Filtre par type -->
+                                <div class="filter-section">
+                                    <div class="filter-label">Type</div>
+                                    <select id="typeFilter" class="filter-select">
+                                        <option value="">Tous les types</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Filtre par difficulté -->
+                                <div class="filter-section">
+                                    <div class="filter-label">Difficulté</div>
+                                    <select id="difficultyFilter" class="filter-select">
+                                        <option value="">Toutes les difficultés</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Filtre par distance -->
+                                <div class="filter-section">
+                                    <div class="filter-label">Distance maximale (km)</div>
+                                    <select id="distanceFilter" class="filter-select">
+                                        <option value="">Toutes les distances</option>
+                                        <option value="5">5 km max</option>
+                                        <option value="10">10 km max</option>
+                                        <option value="15">15 km max</option>
+                                        <option value="20">20 km max</option>
+                                        <option value="30">30 km max</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Bouton de réinitialisation -->
+                                <button id="resetFilters" class="reset-filters-btn">
+                                    <i class="fas fa-undo"></i> Réinitialiser les filtres
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Integrated Search -->
+                        <div class="layer-item" style="padding: 0; margin: 8px 0; background: transparent;">
+                            <div style="padding: 12px;">
+                                <div style="font-size: 12px; color: var(--primary-color); margin-bottom: 8px; font-weight: 500;">
+                                    <i class="fas fa-search" style="color: var(--secondary-color); margin-right: 4px;"></i>
+                                    Rechercher une randonnée
+                                </div>
+                                <div class="search-input-container" style="position: relative;">
+                                    <input type="text" class="hiking-search-input" id="hikingSearchInput" 
+                                           placeholder="Tapez le nom..." 
+                                           style="width: 100%; padding: 8px 30px 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px;">
+                                    <button class="search-clear-btn" id="searchClearBtn" title="Effacer"
+                                            style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #999; cursor: pointer; padding: 2px;">
+                                        <i class="fas fa-times" style="font-size: 12px;"></i>
+                                    </button>
+                                </div>
+                                <div class="hiking-results" id="hikingResults" 
+                                     style="max-height: 150px; overflow-y: auto; margin-top: 8px; border: 1px solid #e0e0e0; border-radius: 6px; background: white;">
+                                    <div class="no-results" style="padding: 10px; text-align: center; color: #999; font-size: 12px;">Commencez à taper pour rechercher...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="layer-group">
+                        <div class="layer-group-title">Administratif</div>
+                        <div class="layer-item" data-layer="lyr_SaintLoAgglo_LimiteAdministrative_12">
+                            <div class="layer-info">
+                                <div class="layer-icon" style="background: #DC143C;">
+                                    <i class="fas fa-map" style="color: white; font-size: 10px;"></i>
+                                </div>
+                                <div class="layer-name">Limites Administratives</div>
+                            </div>
+                            <div class="layer-toggle active"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Widget Météo -->
+                    <div class="layer-group">
+                        <div class="layer-group-title">
+                            <i class="fas fa-cloud-sun" style="color: var(--secondary-color); margin-right: 4px;"></i>
+                            Météo Locale
+                        </div>
+                        <div class="weather-widget">
+                            <div class="weather-loading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>Chargement de la météo...</span>
+                            </div>
+                            <div class="weather-content" style="display: none;">
+                                <div class="weather-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span class="weather-city">Saint-Lô</span>
+                                </div>
+                                <div class="weather-main">
+                                    <div class="weather-icon-container">
+                                        <i class="weather-icon fas fa-sun"></i>
+                                    </div>
+                                    <div class="weather-temp">
+                                        <span class="temp-value">--°</span>
+                                        <span class="temp-unit">C</span>
+                                    </div>
+                                    <div class="weather-desc">--</div>
+                                </div>
+                                <div class="weather-details">
+                                    <div class="weather-detail">
+                                        <i class="fas fa-tint"></i>
+                                        <span class="detail-label">Humidité</span>
+                                        <span class="detail-value">--%</span>
+                                    </div>
+                                    <div class="weather-detail">
+                                        <i class="fas fa-wind"></i>
+                                        <span class="detail-label">Vent</span>
+                                        <span class="detail-value">-- km/h</span>
+                                    </div>
+                                    <div class="weather-detail">
+                                        <i class="fas fa-compress-arrows-alt"></i>
+                                        <span class="detail-label">Pression</span>
+                                        <span class="detail-value">-- hPa</span>
+                                    </div>
+                                </div>
+                                <div class="weather-forecast">
+                                    <div class="forecast-title">Prévisions</div>
+                                    <div class="forecast-items">
+                                        <div class="forecast-item">
+                                            <div class="forecast-time">Maintenant</div>
+                                            <i class="forecast-icon fas fa-sun"></i>
+                                            <div class="forecast-temp">--°</div>
+                                        </div>
+                                        <div class="forecast-item">
+                                            <div class="forecast-time">+3h</div>
+                                            <i class="forecast-icon fas fa-cloud"></i>
+                                            <div class="forecast-temp">--°</div>
+                                        </div>
+                                        <div class="forecast-item">
+                                            <div class="forecast-time">+6h</div>
+                                            <i class="forecast-icon fas fa-cloud-sun"></i>
+                                            <div class="forecast-temp">--°</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="weather-update">
+                                    <i class="fas fa-sync-alt"></i>
+                                    <span class="update-time">Mis à jour: --</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="info-section" id="features">
+            <div class="container">
+                <h2 class="section-title">Fonctionnalités de la Carte</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-mountain"></i>
+                        </div>
+                        <h3>Topographie Détaillée</h3>
+                        <p>Courbes de niveau précises à 5m et 25m pour une compréhension complète du relief du territoire.</p>
+                    </div>
+                    <div class="feature-card" style="cursor: pointer; transition: all 0.3s ease;" onclick="openHikingSearch()">
+                        <div class="feature-icon">
+                            <i class="fas fa-hiking"></i>
+                        </div>
+                        <h3>Sentiers de Randonnée</h3>
+                        <p>Découvrez tous les sentiers balisés avec informations sur distance, difficulté et temps de parcours. </p>
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e0e0e0;">
+                            <span style="color: var(--secondary-color); font-weight: 500; font-size: 14px;">
+                                <i class="fas fa-search" style="margin-right: 6px;"></i>
+                                Cliquer pour rechercher une randonnée
+                            </span>
+                        </div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-road"></i>
+                        </div>
+                        <h3>Réseau Routier</h3>
+                        <p>Visualisez les différents types de chemins : publics, privés, relatifs et légers.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3>Recherche Avancée</h3>
+                        <p>Recherchez des lieux spécifiques avec notre géocodeur Photon intégré.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-ruler-combined"></i>
+                        </div>
+                        <h3>Outils de Mesure</h3>
+                        <p>Mesurez facilement les distances et les surfaces directement sur la carte.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <h3>Contrôle des Couches</h3>
+                        <p>Activez/désactivez les différentes couches d'information selon vos besoins.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="info-section" id="about">
+            <div class="container">
+                <h2 class="section-title">À Propos de ce Projet</h2>
+                <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                    <p>Cette carte interactive a été développée pour fournir un accès complet et intuitif aux informations géographiques de l'agglo de Saint-Lô. Utilisant les technologies les plus récentes de cartographie web, elle offre une expérience utilisateur moderne et responsive.</p>
+                    <br>
+                    <p>Les données sont issues des sources opensources et sont mises à jour régulièrement pour garantir leur pertinence et leur exactitude.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Saint-Lô Agglo Rando</h4>
+                    <p>Carte interactive</p>
+                    <p>&copy; 2026 Tous droits réservés</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Liens Utiles</h4>
+                    <ul>
+                        <li><a href="#home">Accueil</a></li>
+                        <li><a href="#map-section">Carte</a></li>
+                        <li><a href="#features">Fonctionnalités</a></li>
+                        <li><a href="#about">À propos</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Partagez cette carte</h4>
+                    <div class="share-buttons">
+                        <p><a href="https://twitter.com/intent/tweet?text=Venez découvrir cette carte interactive de Saint-Lô Agglo Rando :&url=https://tristan14123.github.io/saintloa-agglomeration-map/" target="_blank">twitter</a></p>
+                        <p><a href="https://www.facebook.com/sharer/sharer.php?u=https://tristan14123.github.io/saintloa-agglomeration-map/" target="_blank">facebook</a></p>
+                        <p><a href="https://www.instagram.com/sharer.php?u=https://tristan14123.github.io/saintloa-agglomeration-map/" target="_blank">instagram</a></p>
+                        <p><a href="https://www.linkedin.com/sharing/share-offsite/?url=https://tristan14123.github.io/saintloa-agglomeration-map/" target="_blank">linkedin</a></p>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-github"></i> <a href="https://github.com/tristan14123" target="_blank">Github de tristan14123</a></p>
+                    <p> <a href="https://www.linkedin.com/in/tristanvachaudez" target="_blank">LinkedIn de tristan</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Saint-Lô Agglo Rando. Développé avec OpenLayers et QGIS2Web.</p>
             </div>
         </div>
-        <script src="resources/qgis2web_expressions.js"></script>
-        <script src="./resources/functions.js"></script>
-        <script src="./resources/ol.js"></script>
-        <script src="./resources/ol-layerswitcher.js"></script>
-        <script src="resources/photon-geocoder-autocomplete.min.js"></script>
-        <script src="layers/courbes5m_5.js"></script><script src="layers/courbes25m_6.js"></script><script src="layers/saintloagglo_tourisme_sla_randonnees_7.js"></script><script src="layers/bt_pub_9.js"></script><script src="layers/bt_rel_10.js"></script><script src="layers/bt_leger_11.js"></script><script src="layers/SaintLoAgglo_LimiteAdministrative_12.js"></script>
-        <script src="styles/courbes5m_5_style.js"></script><script src="styles/courbes25m_6_style.js"></script><script src="styles/saintloagglo_tourisme_sla_randonnees_7_style.js"></script><script src="styles/bt_pub_9_style.js"></script><script src="styles/bt_rel_10_style.js"></script><script src="styles/bt_leger_11_style.js"></script><script src="styles/SaintLoAgglo_LimiteAdministrative_12_style.js"></script>
-        <script src="./layers/layers.js" type="text/javascript"></script> 
-        <script src="./resources/Autolinker.min.js"></script>
-        <script src="./resources/qgis2web.js"></script>        
-    </body>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="resources/qgis2web_expressions.js"></script>
+    <script src="./resources/functions.js"></script>
+    <script src="./resources/ol.js"></script>
+    <script src="./resources/ol-layerswitcher.js"></script>
+    <script src="resources/photon-geocoder-autocomplete.min.js"></script>
+    <script src="layers/courbes5m_5.js"></script>
+    <script src="layers/courbes25m_6.js"></script>
+    <script src="layers/saintloagglo_tourisme_sla_randonnees_7.js"></script>
+    <script src="layers/bt_pub_9.js"></script>
+    <script src="layers/bt_rel_10.js"></script>
+    <script src="layers/bt_leger_11.js"></script>
+    <script src="layers/SaintLoAgglo_LimiteAdministrative_12.js"></script>
+    <script src="styles/courbes5m_5_style.js"></script>
+    <script src="styles/courbes25m_6_style.js"></script>
+    <script src="styles/saintloagglo_tourisme_sla_randonnees_7_style.js"></script>
+    <script src="styles/bt_pub_9_style.js"></script>
+    <script src="styles/bt_rel_10_style.js"></script>
+    <script src="styles/bt_leger_11_style.js"></script>
+    <script src="styles/SaintLoAgglo_LimiteAdministrative_12_style.js"></script>
+    <script src="./layers/layers.js" type="text/javascript"></script>
+    <script src="./resources/Autolinker.min.js"></script>
+    <script src="./resources/qgis2web.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const navigation = document.getElementById('navigation');
+        
+        mobileMenuToggle.addEventListener('click', () => {
+            navigation.classList.toggle('active');
+        });
+
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu if open
+                    navigation.classList.remove('active');
+                }
+            });
+        });
+
+        // Hide loading overlay when map is ready
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                loadingOverlay.classList.add('hidden');
+            }, 1000);
+        });
+
+        // Add scroll effect to header
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                header.style.background = 'linear-gradient(135deg, rgba(44, 62, 80, 0.95), rgba(52, 152, 219, 0.95))';
+                header.style.backdropFilter = 'blur(10px)';
+            } else {
+                header.style.background = 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))';
+                header.style.backdropFilter = 'none';
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                }
+            });
+        }, observerOptions);
+
+        // Observe feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Custom Layer Control
+        class LayerControl {
+            constructor() {
+                this.layers = {};
+                this.isVisible = false;
+                this.init();
+            }
+
+            init() {
+                // Wait for map to be initialized
+                setTimeout(() => {
+                    this.setupLayerReferences();
+                    this.setupEventListeners();
+                    this.setupToggleButton();
+                }, 2000);
+            }
+
+            setupLayerReferences() {
+                // Map layer references from the global scope
+                this.layers = {
+                    'lyr_bd_alti_stlo_agglo_0': window.lyr_bd_alti_stlo_agglo_0,
+                    'lyr_Routes_0': window.lyr_Routes_0,
+                    'lyr_Hydrographie_wmts': window.lyr_Hydrographie_wmts,
+                    'lyr_OrthoExpress2025_2': window.lyr_OrthoExpress2025_2,
+                    'group_Ombrage': window.group_Ombrage,
+                    'lyr_courbes5m_5': window.lyr_courbes5m_5,
+                    'lyr_courbes25m_6': window.lyr_courbes25m_6,
+                    'lyr_saintloagglo_tourisme_sla_randonnees_7': window.lyr_saintloagglo_tourisme_sla_randonnees_7,
+                    'lyr_bt_pub_9': window.lyr_bt_pub_9,
+                    'lyr_bt_rel_10': window.lyr_bt_rel_10,
+                    'lyr_bt_leger_11': window.lyr_bt_leger_11,
+                    'lyr_SaintLoAgglo_LimiteAdministrative_12': window.lyr_SaintLoAgglo_LimiteAdministrative_12,
+                    'lyr_ParcellaireExpressbtimentnoir_1': window.lyr_ParcellaireExpressbtimentnoir_1
+                };
+            }
+
+            setupEventListeners() {
+                const layerItems = document.querySelectorAll('.layer-item');
+                
+                layerItems.forEach(item => {
+                    const toggle = item.querySelector('.layer-toggle');
+                    const layerName = item.dataset.layer;
+                    
+                    if (toggle && this.layers[layerName]) {
+                        toggle.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            this.toggleLayer(layerName, item, toggle);
+                        });
+
+                        // Also make the whole item clickable
+                        item.addEventListener('click', (e) => {
+                            if (e.target !== toggle && !e.target.classList.contains('opacity-slider')) {
+                                this.toggleLayer(layerName, item, toggle);
+                            }
+                        });
+                    }
+                });
+                
+                // Ajouter les écouteurs pour les curseurs d'opacité
+                this.setupOpacitySliders();
+            }
+            
+            setupOpacitySliders() {
+                const sliders = document.querySelectorAll('.opacity-slider');
+                
+                sliders.forEach(slider => {
+                    const layerName = slider.dataset.layer;
+                    const valueDisplay = slider.nextElementSibling;
+                    const layer = this.layers[layerName];
+                    
+                    if (layer) {
+                        // Initialiser l'opacité
+                        const currentOpacity = layer.getOpacity() || 1;
+                        slider.value = currentOpacity * 100;
+                        valueDisplay.textContent = Math.round(currentOpacity * 100) + '%';
+                        
+                        // Écouter les changements
+                        slider.addEventListener('input', (e) => {
+                            const value = e.target.value;
+                            const opacity = value / 100;
+                            
+                            layer.setOpacity(opacity);
+                            valueDisplay.textContent = value + '%';
+                        });
+                        
+                        // Empêcher la propagation du clic
+                        slider.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                        });
+                    }
+                });
+            }
+
+            setupToggleButton() {
+                const toggleButton = document.getElementById('layerToggleButton');
+                const layerControl = document.getElementById('layerControl');
+                const closeBtn = document.getElementById('closeLayerControl');
+
+                if (toggleButton && layerControl) {
+                    // Toggle button click
+                    toggleButton.addEventListener('click', () => {
+                        this.toggleLayerControl();
+                    });
+
+                    // Close button click
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', () => {
+                            this.hideLayerControl();
+                        });
+                    }
+
+                    // Close on Escape key
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape' && this.isVisible) {
+                            this.hideLayerControl();
+                        }
+                    });
+
+                    // Close on outside click
+                    document.addEventListener('click', (e) => {
+                        if (this.isVisible && 
+                            !layerControl.contains(e.target) && 
+                            !toggleButton.contains(e.target)) {
+                            this.hideLayerControl();
+                        }
+                    });
+                }
+                
+                // Initialiser les filtres de randonnée
+                this.initializeHikingFilters();
+                
+                // Initialiser le widget météo
+                this.initializeWeatherWidget();
+            }
+            
+            initializeWeatherWidget() {
+                // Coordonnées de Saint-Lô (approximatif)
+                const saintLoCoords = {
+                    lat: 49.1189,
+                    lon: -1.0939
+                };
+                
+                // Simuler des données météo (remplacer par API réelle si disponible)
+                this.loadWeatherData(saintLoCoords);
+                
+                // Rafraîchir toutes les 30 minutes
+                setInterval(() => {
+                    this.loadWeatherData(saintLoCoords);
+                }, 30 * 60 * 1000);
+            }
+            
+            async loadWeatherData(coords) {
+                const loadingEl = document.querySelector('.weather-loading');
+                const contentEl = document.querySelector('.weather-content');
+                
+                try {
+                    // Simuler un délai de chargement
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Données météo simulées (remplacer par API OpenWeatherMap ou autre)
+                    const weatherData = this.generateMockWeatherData();
+                    
+                    this.updateWeatherWidget(weatherData);
+                    
+                    loadingEl.style.display = 'none';
+                    contentEl.style.display = 'block';
+                    
+                } catch (error) {
+                    console.error('Erreur lors du chargement des données météo:', error);
+                    loadingEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Erreur de chargement</span>';
+                }
+            }
+            
+            generateMockWeatherData() {
+                const conditions = [
+                    { icon: 'fa-sun', desc: 'Ensoleillé', temp: 18 },
+                    { icon: 'fa-cloud-sun', desc: 'Partiellement nuageux', temp: 16 },
+                    { icon: 'fa-cloud', desc: 'Nuageux', temp: 14 },
+                    { icon: 'fa-cloud-rain', desc: 'Pluie légère', temp: 12 }
+                ];
+                
+                const current = conditions[Math.floor(Math.random() * conditions.length)];
+                
+                return {
+                    location: 'Saint-Lô',
+                    current: {
+                        temp: current.temp + Math.floor(Math.random() * 3),
+                        icon: current.icon,
+                        description: current.desc,
+                        humidity: 60 + Math.floor(Math.random() * 30),
+                        windSpeed: 5 + Math.floor(Math.random() * 15),
+                        pressure: 1010 + Math.floor(Math.random() * 20)
+                    },
+                    forecast: [
+                        { time: 'Maintenant', icon: current.icon, temp: current.temp },
+                        { time: '+3h', icon: 'fa-cloud', temp: current.temp - 2 },
+                        { time: '+6h', icon: 'fa-cloud-sun', temp: current.temp + 1 }
+                    ],
+                    updateTime: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+                };
+            }
+            
+            updateWeatherWidget(data) {
+                // Mettre à jour la localisation
+                document.querySelector('.weather-city').textContent = data.location;
+                
+                // Mettre à jour les données principales
+                document.querySelector('.weather-icon').className = `weather-icon fas ${data.current.icon}`;
+                document.querySelector('.temp-value').textContent = data.current.temp;
+                document.querySelector('.weather-desc').textContent = data.current.description;
+                
+                // Mettre à jour les détails
+                document.querySelector('.weather-detail:nth-child(1) .detail-value').textContent = `${data.current.humidity}%`;
+                document.querySelector('.weather-detail:nth-child(2) .detail-value').textContent = `${data.current.windSpeed} km/h`;
+                document.querySelector('.weather-detail:nth-child(3) .detail-value').textContent = `${data.current.pressure} hPa`;
+                
+                // Mettre à jour les prévisions
+                const forecastItems = document.querySelectorAll('.forecast-item');
+                data.forecast.forEach((forecast, index) => {
+                    if (forecastItems[index]) {
+                        forecastItems[index].querySelector('.forecast-time').textContent = forecast.time;
+                        forecastItems[index].querySelector('.forecast-icon').className = `forecast-icon fas ${forecast.icon}`;
+                        forecastItems[index].querySelector('.forecast-temp').textContent = `${forecast.temp}°`;
+                    }
+                });
+                
+                // Mettre à jour l'heure de mise à jour
+                document.querySelector('.update-time').textContent = `Mis à jour: ${data.updateTime}`;
+            }
+            
+            initializeHikingFilters() {
+                // Récupérer les données uniques pour les filtres
+                const hikingLayer = this.layers['lyr_saintloagglo_tourisme_sla_randonnees_7'];
+                if (!hikingLayer) return;
+                
+                const source = hikingLayer.getSource();
+                const features = source.getFeatures();
+                
+                // Extraire les valeurs uniques
+                const types = new Set();
+                const difficulties = new Set();
+                
+                features.forEach(feature => {
+                    const type = feature.get('type');
+                    const difficulty = feature.get('difficulte');
+                    
+                    if (type) types.add(type);
+                    if (difficulty) difficulties.add(difficulty);
+                });
+                
+                // Remplir les sélecteurs
+                const typeFilter = document.getElementById('typeFilter');
+                const difficultyFilter = document.getElementById('difficultyFilter');
+                
+                // Types
+                Array.from(types).sort().forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    typeFilter.appendChild(option);
+                });
+                
+                // Difficultés
+                Array.from(difficulties).sort().forEach(difficulty => {
+                    const option = document.createElement('option');
+                    option.value = difficulty;
+                    option.textContent = difficulty;
+                    difficultyFilter.appendChild(option);
+                });
+                
+                // Ajouter les écouteurs d'événements
+                this.setupFilterListeners();
+            }
+            
+            setupFilterListeners() {
+                const typeFilter = document.getElementById('typeFilter');
+                const difficultyFilter = document.getElementById('difficultyFilter');
+                const distanceFilter = document.getElementById('distanceFilter');
+                const resetBtn = document.getElementById('resetFilters');
+                
+                const applyFilters = () => {
+                    this.applyHikingFilters();
+                };
+                
+                typeFilter.addEventListener('change', applyFilters);
+                difficultyFilter.addEventListener('change', applyFilters);
+                distanceFilter.addEventListener('change', applyFilters);
+                
+                resetBtn.addEventListener('click', () => {
+                    typeFilter.value = '';
+                    difficultyFilter.value = '';
+                    distanceFilter.value = '';
+                    this.applyHikingFilters();
+                });
+            }
+            
+            applyHikingFilters() {
+                const hikingLayer = this.layers['lyr_saintloagglo_tourisme_sla_randonnees_7'];
+                if (!hikingLayer) return;
+                
+                const typeFilter = document.getElementById('typeFilter').value;
+                const difficultyFilter = document.getElementById('difficultyFilter').value;
+                const distanceFilter = document.getElementById('distanceFilter').value;
+                
+                const source = hikingLayer.getSource();
+                const features = source.getFeatures();
+                
+                features.forEach(feature => {
+                    let visible = true;
+                    
+                    // Filtre par type
+                    if (typeFilter && feature.get('type') !== typeFilter) {
+                        visible = false;
+                    }
+                    
+                    // Filtre par difficulté
+                    if (difficultyFilter && feature.get('difficulte') !== difficultyFilter) {
+                        visible = false;
+                    }
+                    
+                    // Filtre par distance
+                    if (distanceFilter) {
+                        const distance = parseFloat(feature.get('distance'));
+                        if (distance > parseFloat(distanceFilter)) {
+                            visible = false;
+                        }
+                    }
+                    
+                    feature.setStyle(visible ? null : new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: 'transparent',
+                            width: 0
+                        }),
+                        fill: new ol.style.Fill({
+                            color: 'transparent'
+                        })
+                    }));
+                });
+                
+                // Forcer le rafraîchissement
+                hikingLayer.changed();
+            }
+
+            toggleLayerControl() {
+                const layerControl = document.getElementById('layerControl');
+                const toggleButton = document.getElementById('layerToggleButton');
+                
+                if (this.isVisible) {
+                    this.hideLayerControl();
+                } else {
+                    this.showLayerControl();
+                }
+            }
+
+            showLayerControl() {
+                const layerControl = document.getElementById('layerControl');
+                const toggleButton = document.getElementById('layerToggleButton');
+                
+                layerControl.classList.remove('hidden');
+                toggleButton.classList.add('active');
+                toggleButton.innerHTML = '<i class="fas fa-times"></i>';
+                toggleButton.title = 'Masquer les couches';
+                this.isVisible = true;
+            }
+
+            hideLayerControl() {
+                const layerControl = document.getElementById('layerControl');
+                const toggleButton = document.getElementById('layerToggleButton');
+                
+                layerControl.classList.add('hidden');
+                toggleButton.classList.remove('active');
+                toggleButton.innerHTML = '<i class="fas fa-map"></i>';
+                toggleButton.title = 'Afficher les couches';
+                this.isVisible = false;
+            }
+
+            toggleLayer(layerName, item, toggle) {
+                const layer = this.layers[layerName];
+                if (!layer) return;
+
+                const isVisible = layer.getVisible();
+                
+                // Toggle layer visibility
+                layer.setVisible(!isVisible);
+                
+                // Update UI
+                if (!isVisible) {
+                    toggle.classList.add('active');
+                    item.classList.add('active');
+                } else {
+                    toggle.classList.remove('active');
+                    item.classList.remove('active');
+                }
+
+                // Add animation effect
+                item.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    item.style.transform = 'scale(1)';
+                }, 150);
+            }
+
+            // Method to show/hide all layers
+            toggleAllLayers(show) {
+                Object.keys(this.layers).forEach(layerName => {
+                    const layer = this.layers[layerName];
+                    const item = document.querySelector(`[data-layer="${layerName}"]`);
+                    const toggle = item ? item.querySelector('.layer-toggle') : null;
+                    
+                    if (layer) {
+                        layer.setVisible(show);
+                        
+                        if (item && toggle) {
+                            if (show) {
+                                toggle.classList.add('active');
+                                item.classList.add('active');
+                            } else {
+                                toggle.classList.remove('active');
+                                item.classList.remove('active');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Initialize layer control when page loads
+        let layerControl;
+        
+        // Wait for map and layers to be fully loaded
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                layerControl = new LayerControl();
+            }, 3000);
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Toggle layer control with 'L' key
+            if (e.key === 'l' || e.key === 'L') {
+                if (layerControl) {
+                    layerControl.toggleLayerControl();
+                }
+            }
+            
+            // Show all layers with 'A' key
+            if (e.key === 'a' || e.key === 'A') {
+                if (layerControl) {
+                    // Show layer control first if hidden
+                    if (!layerControl.isVisible) {
+                        layerControl.showLayerControl();
+                    }
+                    layerControl.toggleAllLayers(true);
+                }
+            }
+            
+            // Hide all layers with 'H' key
+            if (e.key === 'h' || e.key === 'H') {
+                if (layerControl) {
+                    // Show layer control first if hidden
+                    if (!layerControl.isVisible) {
+                        layerControl.showLayerControl();
+                    }
+                    layerControl.toggleAllLayers(false);
+                }
+            }
+        });
+
+        // Add touch support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const layerControl = document.getElementById('layerControl');
+            if (!layerControl) return;
+
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+
+            // Swipe left to hide layer control
+            if (diff > swipeThreshold) {
+                layerControl.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    layerControl.style.transform = 'translateX(0)';
+                }, 300);
+            }
+            
+            // Swipe right to show layer control
+            if (diff < -swipeThreshold) {
+                layerControl.style.transform = 'translateX(0)';
+            }
+        }
+
+        // Hiking Search and Highlight System
+        class HikingSearch {
+            constructor() {
+                this.hikingLayer = null;
+                this.originalStyle = null;
+                this.highlightStyle = null;
+                this.highlightedFeature = null;
+                this.trails = [];
+                this.init();
+            }
+
+            init() {
+                // Wait for map and layers to be loaded
+                setTimeout(() => {
+                    this.setupLayerReferences();
+                    this.setupEventListeners();
+                    this.extractTrails();
+                    this.createHighlightStyle();
+                }, 3000);
+            }
+
+            setupLayerReferences() {
+                this.hikingLayer = window.lyr_saintloagglo_tourisme_sla_randonnees_7;
+                this.originalStyle = window.style_saintloagglo_tourisme_sla_randonnees_7;
+            }
+
+            createHighlightStyle() {
+                this.highlightStyle = function(feature, resolution) {
+                    return [
+                        new ol.style.Style({
+                            stroke: new ol.style.Stroke({
+                                color: '#FFD700',
+                                width: 6,
+                                lineDash: []
+                            }),
+                            zIndex: 1000
+                        }),
+                        new ol.style.Style({
+                            stroke: new ol.style.Stroke({
+                                color: '#FF6347',
+                                width: 3,
+                                lineDash: []
+                            }),
+                            zIndex: 1001
+                        })
+                    ];
+                };
+            }
+
+            extractTrails() {
+                if (!this.hikingLayer || !window.json_saintloagglo_tourisme_sla_randonnees_7) return;
+
+                const features = window.json_saintloagglo_tourisme_sla_randonnees_7.features;
+                this.trails = features.map((feature, index) => ({
+                    index: index,
+                    name: feature.properties.nom || 'Sans nom',
+                    type: feature.properties.type || 'Inconnu',
+                    distance: feature.properties.distance || 0,
+                    temps: feature.properties.temps || 0,
+                    difficulte: feature.properties.difficulte || 'Inconnue',
+                    categorie: feature.properties.categorie || 'Inconnue',
+                    depart: feature.properties.depart || 'Non spécifié'
+                }));
+            }
+
+            setupEventListeners() {
+                const searchInput = document.getElementById('hikingSearchInput');
+                const clearBtn = document.getElementById('searchClearBtn');
+
+                if (searchInput) {
+                    searchInput.addEventListener('input', (e) => {
+                        this.handleSearch(e.target.value);
+                    });
+
+                    searchInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                        }
+                    });
+                }
+
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', () => {
+                        this.clearSearch();
+                    });
+                }
+
+                // Add click event to hiking layer
+                this.setupMapClickHandler();
+            }
+
+            setupMapClickHandler() {
+                if (!this.hikingLayer) return;
+
+                // Wait for map to be fully loaded
+                setTimeout(() => {
+                    const map = window.map;
+                    if (map) {
+                        map.on('click', (evt) => {
+                            const features = map.getFeaturesAtPixel(evt.pixel);
+                            
+                            // Look specifically for hiking layer features
+                            const hikingFeature = features.find(feature => {
+                                // Check if the feature belongs to our hiking layer
+                                if (!feature || !feature.get('nom')) return false;
+                                
+                                // Get all features from our hiking layer source
+                                const hikingSource = this.hikingLayer.getSource();
+                                const hikingFeatures = hikingSource.getFeatures();
+                                
+                                // Check if this feature is in our hiking layer
+                                return hikingFeatures.includes(feature);
+                            });
+
+                            if (hikingFeature) {
+                                const trailName = hikingFeature.get('nom');
+                                this.highlightFeatureFromMap(hikingFeature, trailName);
+                                this.showPopup(hikingFeature, evt.coordinate);
+                            }
+                        });
+
+                        // Change cursor on hover over hiking trails only
+                        map.on('pointermove', (evt) => {
+                            const features = map.getFeaturesAtPixel(evt.pixel);
+                            
+                            // Check if any feature is from the hiking layer
+                            const hasHikingFeature = features.some(feature => {
+                                if (!feature || !feature.get('nom')) return false;
+                                
+                                const hikingSource = this.hikingLayer.getSource();
+                                const hikingFeatures = hikingSource.getFeatures();
+                                
+                                return hikingFeatures.includes(feature);
+                            });
+                            
+                            map.getTargetElement().style.cursor = hasHikingFeature ? 'pointer' : '';
+                        });
+                    }
+                }, 4000);
+            }
+
+            showPopup(feature, coordinate) {
+                const popup = document.getElementById('popup');
+                const popupContent = document.getElementById('popup-content');
+                
+                if (!popup || !popupContent) return;
+
+                // Get all properties
+                const nom = feature.get('nom') || 'Non spécifié';
+                const type = feature.get('type') || 'Non spécifié';
+                const distance = feature.get('distance') || 'Non spécifié';
+                const temps = feature.get('temps') || 'Non spécifié';
+                const difficulte = feature.get('difficulte') || 'Non spécifié';
+                const categorie = feature.get('categorie') || 'Non spécifié';
+                const depart = feature.get('depart') || 'Non spécifié';
+                const denivele = feature.get('denivele') || 'Non spécifié';
+                const gestionnai = feature.get('gestionnai') || 'Non spécifié';
+                const lien = feature.get('lien') || '';
+
+                // Format the difficulty with color coding
+                const difficultyClass = difficulte.toLowerCase().replace(' ', '-');
+                const difficultyHtml = difficulte !== 'Non spécifié' ? 
+                    `<span class="popup-difficulty ${difficultyClass}">${difficulte}</span>` : 
+                    difficulte;
+
+                // Format the link
+                const linkHtml = lien ? 
+                    `<a href="${lien}" target="_blank" rel="noopener noreferrer">${lien}</a>` : 
+                    'Non disponible';
+
+                // Create popup content with table format as requested
+                popupContent.innerHTML = `
+                    <h3><i class="fas fa-hiking"></i> ${nom}</h3>
+                    <table>
+                        <tr>
+                            <td>Nom</td>
+                            <td>${nom}</td>
+                        </tr>
+                        <tr>
+                            <td>Type</td>
+                            <td>${type}</td>
+                        </tr>
+                        <tr>
+                            <td>Distance en Km</td>
+                            <td>${distance}</td>
+                        </tr>
+                        <tr>
+                            <td>Temps en min</td>
+                            <td>${temps}</td>
+                        </tr>
+                        <tr>
+                            <td>Difficulté</td>
+                            <td>${difficultyHtml}</td>
+                        </tr>
+                        <tr>
+                            <td>Catégorie</td>
+                            <td>${categorie}</td>
+                        </tr>
+                        <tr>
+                            <td>Départ</td>
+                            <td>${depart}</td>
+                        </tr>
+                        <tr>
+                            <td>Dénivelé</td>
+                            <td>${denivele}</td>
+                        </tr>
+                        <tr>
+                            <td>Gestionnaire</td>
+                            <td>${gestionnai}</td>
+                        </tr>
+                        <tr>
+                            <td>Lien web</td>
+                            <td>${linkHtml}</td>
+                        </tr>
+                    </table>
+                `;
+
+                // Position popup
+                popup.style.display = 'block';
+                
+                // Use OpenLayers popup positioning
+                if (window.map) {
+                    const overlay = new ol.Overlay({
+                        element: popup,
+                        positioning: 'bottom-center',
+                        stopEvent: false,
+                        offset: [0, -10]
+                    });
+                    overlay.setPosition(coordinate);
+                    window.map.addOverlay(overlay);
+                    
+                    // Store overlay reference for cleanup
+                    this.currentPopupOverlay = overlay;
+                }
+
+                // Setup closer
+                const closer = document.getElementById('popup-closer');
+                if (closer) {
+                    closer.onclick = () => {
+                        this.hidePopup();
+                        return false;
+                    };
+                }
+            }
+
+            hidePopup() {
+                const popup = document.getElementById('popup');
+                if (popup) {
+                    popup.style.display = 'none';
+                }
+                
+                if (this.currentPopupOverlay && window.map) {
+                    window.map.removeOverlay(this.currentPopupOverlay);
+                    this.currentPopupOverlay = null;
+                }
+            }
+
+            highlightFeatureFromMap(feature, trailName) {
+                if (!feature) return;
+
+                // Clear previous highlight
+                this.clearHighlight();
+
+                // Apply highlight style
+                feature.setStyle(this.highlightStyle);
+                this.highlightedFeature = feature;
+
+                // Update UI
+                this.updateHighlightInfo(trailName);
+                
+                // Find and highlight in search results if search is active
+                this.highlightInResults(trailName);
+                
+                // Add visual feedback
+                this.showClickFeedback(trailName);
+                
+                // Zoom to feature with padding
+                this.zoomToFeature(feature);
+            }
+
+            showClickFeedback(trailName) {
+                // Create a temporary popup or indicator
+                const feedback = document.createElement('div');
+                feedback.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: var(--secondary-color);
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    font-weight: 500;
+                    z-index: 10000;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    animation: fadeInOut 2s ease-in-out;
+                    pointer-events: none;
+                `;
+                feedback.innerHTML = `<i class="fas fa-hiking" style="margin-right: 8px;"></i>${trailName}`;
+                
+                document.body.appendChild(feedback);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    if (feedback.parentNode) {
+                        feedback.parentNode.removeChild(feedback);
+                    }
+                }, 2000);
+            }
+
+            highlightInResults(trailName) {
+                // Find the trail in our trails array
+                const trailIndex = this.trails.findIndex(trail => 
+                    trail.name === trailName
+                );
+
+                if (trailIndex !== -1) {
+                    this.highlightResultItem(trailIndex);
+                    
+                    // Make sure the search input has the trail name for context
+                    const searchInput = document.getElementById('hikingSearchInput');
+                    if (searchInput && !searchInput.value) {
+                        // Show all results and highlight the selected one
+                        this.handleSearch('');
+                        setTimeout(() => {
+                            this.highlightResultItem(trailIndex);
+                        }, 100);
+                    }
+                }
+            }
+
+            handleSearch(query) {
+                const resultsContainer = document.getElementById('hikingResults');
+                
+                if (!query.trim()) {
+                    resultsContainer.innerHTML = '<div class="no-results" style="padding: 10px; text-align: center; color: #999; font-size: 12px;">Commencez à taper pour rechercher...</div>';
+                    return;
+                }
+
+                const filteredTrails = this.trails.filter(trail => 
+                    trail.name.toLowerCase().includes(query.toLowerCase())
+                );
+
+                if (filteredTrails.length === 0) {
+                    resultsContainer.innerHTML = '<div class="no-results" style="padding: 10px; text-align: center; color: #999; font-size: 12px;">Aucune randonnée trouvée</div>';
+                    return;
+                }
+
+                this.displayResults(filteredTrails);
+            }
+
+            displayResults(trails) {
+                const resultsContainer = document.getElementById('hikingResults');
+                
+                resultsContainer.innerHTML = trails.map(trail => `
+                    <div class="hiking-result-item" data-index="${trail.index}" style="padding: 8px 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: all 0.2s ease; font-size: 12px;">
+                        <div style="font-weight: 500; margin-bottom: 4px;">${this.highlightMatch(trail.name)}</div>
+                        <div style="font-size: 11px; opacity: 0.8; display: flex; gap: 8px;">
+                            <span><i class="fas fa-route" style="font-size: 10px;"></i> ${trail.type}</span>
+                            <span><i class="fas fa-ruler" style="font-size: 10px;"></i> ${trail.distance} km</span>
+                            <span><i class="fas fa-clock" style="font-size: 10px;"></i> ${Math.round(trail.temps)} min</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add click listeners to results
+                resultsContainer.querySelectorAll('.hiking-result-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const index = parseInt(item.dataset.index);
+                        this.highlightTrail(index, trails[index].name);
+                    });
+                    
+                    item.addEventListener('mouseenter', () => {
+                        item.style.background = 'var(--bg-light)';
+                        item.style.paddingLeft = '16px';
+                    });
+                    
+                    item.addEventListener('mouseleave', () => {
+                        item.style.background = 'white';
+                        item.style.paddingLeft = '12px';
+                    });
+                });
+            }
+
+            highlightMatch(text) {
+                const query = document.getElementById('hikingSearchInput').value;
+                if (!query) return text;
+                
+                const regex = new RegExp(`(${query})`, 'gi');
+                return text.replace(regex, '<strong>$1</strong>');
+            }
+
+            highlightTrail(index, trailName) {
+                if (!this.hikingLayer) return;
+
+                // Clear previous highlight
+                this.clearHighlight();
+
+                // Get the source and features
+                const source = this.hikingLayer.getSource();
+                const features = source.getFeatures();
+                
+                if (features[index]) {
+                    this.highlightedFeature = features[index];
+                    
+                    // Apply highlight style
+                    this.highlightedFeature.setStyle(this.highlightStyle);
+                    
+                    // Update UI
+                    this.updateHighlightInfo(trailName);
+                    this.highlightResultItem(index);
+                    
+                    // Zoom to trail
+                    this.zoomToFeature(this.highlightedFeature);
+                }
+            }
+
+            clearHighlight() {
+                if (this.highlightedFeature && this.originalStyle) {
+                    this.highlightedFeature.setStyle(this.originalStyle);
+                    this.highlightedFeature = null;
+                }
+                
+                // Also hide popup when clearing highlight
+                this.hidePopup();
+                
+                this.updateHighlightInfo('');
+                this.clearHighlightedResults();
+            }
+
+            updateHighlightInfo(trailName) {
+                const info = document.getElementById('highlightInfo');
+                const nameSpan = document.getElementById('highlightedTrailName');
+                
+                if (trailName) {
+                    nameSpan.textContent = trailName;
+                    info.classList.add('show');
+                } else {
+                    info.classList.remove('show');
+                }
+            }
+
+            highlightResultItem(index) {
+                // Remove previous highlights
+                document.querySelectorAll('.hiking-result-item').forEach(item => {
+                    item.style.background = 'white';
+                    item.style.borderLeft = 'none';
+                });
+                
+                // Add highlight to selected item
+                const selectedItem = document.querySelector(`[data-index="${index}"]`);
+                if (selectedItem) {
+                    selectedItem.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+                    selectedItem.style.color = 'white';
+                    selectedItem.style.borderLeft = '4px solid #FFD700';
+                    selectedItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+
+            clearHighlightedResults() {
+                document.querySelectorAll('.hiking-result-item').forEach(item => {
+                    item.style.background = 'white';
+                    item.style.color = 'inherit';
+                    item.style.borderLeft = 'none';
+                });
+            }
+
+            zoomToFeature(feature) {
+                if (!window.map) return;
+                
+                const geometry = feature.getGeometry();
+                if (geometry) {
+                    const extent = geometry.getExtent();
+                    window.map.getView().fit(extent, {
+                        duration: 1000,
+                        padding: [50, 50, 50, 50],
+                        maxZoom: 16
+                    });
+                }
+            }
+
+            clearSearch() {
+                const searchInput = document.getElementById('hikingSearchInput');
+                const resultsContainer = document.getElementById('hikingResults');
+                
+                searchInput.value = '';
+                resultsContainer.innerHTML = '<div class="no-results">Commencez à taper pour rechercher...</div>';
+                this.clearHighlight();
+            }
+        }
+
+        // Initialize hiking search when page loads
+        let hikingSearch;
+        
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                hikingSearch = new HikingSearch();
+            }, 3500);
+        });
+
+        // Function to open hiking search from feature card
+        function openHikingSearch() {
+            // Show layer control first
+            const layerControl = document.getElementById('layerControl');
+            const toggleButton = document.getElementById('layerToggleButton');
+            
+            if (layerControl && layerControl.classList.contains('hidden')) {
+                layerControl.classList.remove('hidden');
+                toggleButton.classList.add('active');
+                toggleButton.innerHTML = '<i class="fas fa-times"></i>';
+                toggleButton.title = 'Masquer les couches';
+                if (layerControl) layerControl.isVisible = true;
+            }
+            
+            // Scroll to map section
+            document.getElementById('map-section').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+            
+            // Focus on search input after a short delay
+            setTimeout(() => {
+                const searchInput = document.getElementById('hikingSearchInput');
+                if (searchInput) {
+                    searchInput.focus();
+                    searchInput.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'nearest' 
+                    });
+                }
+            }, 800);
+        }
+    </script>
+</body>
 </html>
